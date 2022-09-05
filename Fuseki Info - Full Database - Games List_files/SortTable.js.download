@@ -1,0 +1,139 @@
+
+function resortTable(td, sort_type, update_num) {
+ var sort_column_index = td.cellIndex;
+ var table = getParent(td, 'table');
+ if (table.rows.length <= 2) return;
+
+ var sortindex = parseInt(table.getAttribute("sortindex"));
+ if (isNaN(sortindex))
+  sortindex = -1;
+
+ sort_type = sort_type.toLowerCase();
+ var newRows = new Array(table.rows.length - 1);
+ var v;
+ for (var i = 1; i < table.rows.length; i++) {
+  newRows[i - 1] = { element: table.rows[i] }
+  v = vd_getInnerText(table.rows[i].cells[sort_column_index]);
+  if (sort_type == 'caseinsensitive')
+   newRows[i - 1].value = v.toLowerCase();
+  else if (sort_type == 'date')
+   newRows[i - 1].value = text_to_date(v);
+  else if (sort_type == 'numeric') {
+   newRows[i - 1].value = parseFloat(v);
+   if (isNaN(newRows[i - 1].value))
+    newRows[i - 1].value = 0;
+  } else 
+   newRows[i - 1].value = v;
+ }
+
+ newRows.sort(sort_data);
+
+ var ascending = 0;
+ var img = getLastChild(td, "img");
+
+ if (sort_column_index == sortindex) {
+  if (img.getAttribute("sortdir") == 'down')
+   ascending = 1;
+ } else {
+  if (sortindex >= 0) {
+   var pimg = getLastChild(table.rows[0].cells[sortindex], "img");
+   pimg.className = "sortarrow";
+  }
+
+  if (img.getAttribute("sortdir") == 'up')
+   ascending = 1;
+ }
+
+ if (ascending) 
+  newRows.reverse();
+
+ if (update_num)
+  for (var i = newRows.length; i > 0; i--)
+   newRows[i - 1].element.cells[0].innerHTML = i.toString();
+    
+ var tBody = table.tBodies[0];
+
+ var nextSibling = tBody.nextSibling;
+ var p = tBody.parentNode;
+ p.removeChild(tBody);
+
+ for (var i = 0; i < newRows.length; i++) 
+  tBody.appendChild(newRows[i].element);
+
+ p.insertBefore(tBody, nextSibling);
+
+ if (ascending) {
+  img.className = "sortarrow ascending";
+  img.setAttribute('sortdir','up');
+ } else {
+  img.className = "sortarrow descending";
+  img.setAttribute('sortdir','down');
+ }
+ table.setAttribute('sortindex', sort_column_index);
+}
+
+function vd_getInnerText(el) {
+ if (typeof el == "string") return el;
+ if (typeof el == "undefined") return el;
+ if (el.innerText) return el.innerText;
+
+ var str = "";
+ var cs = el.childNodes;
+ var l = cs.length;
+ for (var i = 0; i < l; i++) {
+  switch (cs[i].nodeType) {
+   case 1: // ELEMENT_NODE
+    str += vd_getInnerText(cs[i]);
+    break;
+   case 3: // TEXT_NODE
+    str += cs[i].nodeValue;
+    break;
+  }
+ }
+ return str;
+}
+
+function getParent(el, pTagName) {
+ if (el == null) 
+  return null;
+ else if (el.nodeType == 1 && el.tagName.toLowerCase() == pTagName.toLowerCase())	// Gecko bug, supposed to be uppercase
+  return el;
+ else
+  return getParent(el.parentNode, pTagName);
+}
+
+function getLastChild(el, pTagName) {
+ if (el == null) 
+  return null;
+ else {
+  var res;
+  for (var ci = el.childNodes.length - 1; ci >= 0; ci--) {
+   res = getLastChild(el.childNodes[ci], pTagName);
+   if (res != null)
+    return res;
+
+   if (el.childNodes[ci].tagName && el.childNodes[ci].tagName.toLowerCase() == pTagName.toLowerCase())
+    return el.childNodes[ci];
+  }
+  return null;
+ }
+}
+
+function text_to_date(s) {
+ if (s.length == 10)
+  return s.substr(6, 4) + s.substr(3, 2) + s.substr(0, 2);
+ else {
+  yr = s.substr(6, 2);
+  if (parseInt(yr) < 50) 
+   yr = '20' + yr; 
+  else 
+   yr = '19' + yr;
+  return yr + s.substr(3, 2) + s.substr(0, 2);
+ }
+}
+
+function sort_data(a, b) {
+ if (a.value == b.value) return 0;
+ if (a.value < b.value) return -1;
+ return 1;
+}
