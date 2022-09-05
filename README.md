@@ -1,0 +1,2 @@
+# GoStatistics
+fuseki.info webscrape
