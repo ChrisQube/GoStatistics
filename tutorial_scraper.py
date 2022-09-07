@@ -38,7 +38,7 @@ for row in table.tbody.find_all('tr'):
         density = columns[4].span.contents[0].strip('&0.')
         homes_count = columns[5].span.contents[0].strip('&0.')
 
-        #df = df.append({'Neighborhood': neighborhood,  'Zone': zone, 'Area': area, 'Population': population, 'Density': density, 'Homes_count': homes_count}, ignore_index=True)
-        df = df.append([neighborhood, zone, area, population, density, homes_count], ignore_index=True)
+        df = df.append({'Neighborhood': neighborhood,  'Zone': zone, 'Area': area, 'Population': population, 'Density': density, 'Homes_count': homes_count}, ignore_index=True)
+        #df = df.append([neighborhood, zone, area, population, density, homes_count], ignore_index=True)
 
 df.head()
