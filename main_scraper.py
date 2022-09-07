@@ -19,7 +19,7 @@ titles = [x.text for x in table.find('thead').find_all('td')]
 df = pd.DataFrame(columns=titles)
 
 # Get list of each URL from file
-filePath = "C:/Users/Chris/Documents/GitHub/GoStatistics/Database sample.txt"
+filePath = "C:/Users/Chris/Documents/GitHub/GoStatistics/Database urls.txt"
 with open(filePath, 'r') as file:
     lines = file.readlines()
     urls = [line.rstrip() for line in lines]
