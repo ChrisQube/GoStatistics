@@ -32,11 +32,14 @@ for url in urls:
     # Get all rows and store them as lists in a list.
     rows = [[x.text for x in row.find_all('td')] for row in table.find('tbody').find_all('tr')]
     # Append rows to the dataframe: df = pd.concat(df, pd.DataFrame(rows, columns=titles))
-    df = pd.concat(df, pd.DataFrame(rows, columns=titles))
+    df = df.append(pd.DataFrame(rows, columns=titles))
+    #df = pd.concat(df, pd.DataFrame(rows, columns=titles),ignore_index=True)
 
 # close file
 file.close()
 
-df.head()
+#df.head()
+#df.tail()
 
 # Export csv
+df.to_csv('GoStatistics/output.csv', index=False)
