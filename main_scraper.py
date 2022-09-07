@@ -12,8 +12,8 @@ currentPage = requests.get(url)
 # Create BeautifulSoup Object
 soup = BeautifulSoup(currentPage.content, 'lxml')
 
-table = soup.find_all('table')[0] 
-df = pd.read_html(str(table))[0]
+table = soup.find_all('table')
+df = pd.read_html(str(table))
 
 for row in soup.find('table',id="gameslist").find_all('tr'):
     print(' '.join([x.text for x in row.find_all('td')]))
