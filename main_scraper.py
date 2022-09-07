@@ -3,8 +3,6 @@ from bs4 import BeautifulSoup
 import requests
 import pandas as pd
 
-
-
 # Single page download
 url = "http://fuseki.info/games_list.php?sb=full&id=M4335SG0"
 currentPage = requests.get(url)
@@ -12,9 +10,17 @@ currentPage = requests.get(url)
 # Create BeautifulSoup Object
 soup = BeautifulSoup(currentPage.content, 'lxml')
 
-table = soup.find_all('table')
-df = pd.read_html(str(table))
+table = soup.find('table', id='gameslist')
 
-for row in soup.find('table',id="gameslist").find_all('tr'):
-    print(' '.join([x.text for x in row.find_all('td')]))
-    # Or just use '[x.text for x in row.find_all('td')]' in your data frame.
+# Get all the column titles.
+titles = [x.text for x in table.find('thead').find_all('td')]
+#print(titles)
+
+# Get all rows and store them as lists in a list.
+rows = [[x.text for x in row.find_all('td')] for row in table.find_all('tbody')]
+#print(rows)
+
+# Create the dataframe.
+df = pd.DataFrame(rows, columns=titles)
+
+df.head()
