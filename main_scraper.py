@@ -7,32 +7,20 @@ import pandas as pd
 url = "http://fuseki.info/games_list.php?sb=full&id=M4335SG0"
 currentPage = requests.get(url)
 
-# Testing page response
-# print(currentPage)
+# Create BeautifulSoup Object
+soup = BeautifulSoup(currentPage.content, 'lxml')
 
-soup = BeautifulSoup(currentPage.content, 'html.parser')
+table = soup.find('table', id='gameslist')
 
-currentTable = soup.find("table", id="gameslist")
-tableRows = currentTable.tbody.find_all("td")
-#tableElements = soup.find_all('table', id="gameslist")
+# Get all the column titles.
+titles = [x.text for x in table.find('thead').find_all('td')]
+#print(titles)
 
-# tableData = []
-# for data in tableRows:
-#     tableData.append(data)
+# Get all rows and store them as lists in a list.
+rows = [[x.text for x in row.find_all('td')] for row in table.find('tbody').find_all('tr')]
+#print(rows)
 
-print(tableRows)
+# Create the dataframe.
+df = pd.DataFrame(rows, columns=titles)
 
-# for child in soup.find_all('table', id="gameslist").children:
-#     for td in child:
-#         print(td)
-
-
-# with open('GoStatistics/dummy website.html', 'r') as html_file:
-#     content = html_file.read()
-
-#     soup = BeautifulSoup(content, 'lxml')
-#     tags = soup.find('table',)
-#     print(tags)
-
-
-
+df.head()
