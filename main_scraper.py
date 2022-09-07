@@ -16,11 +16,30 @@ table = soup.find('table', id='gameslist')
 titles = [x.text for x in table.find('thead').find_all('td')]
 #print(titles)
 
-# Get all rows and store them as lists in a list.
-rows = [[x.text for x in row.find_all('td')] for row in table.find('tbody').find_all('tr')]
-#print(rows)
+df = pd.DataFrame(columns=titles)
 
-# Create the dataframe.
-df = pd.DataFrame(rows, columns=titles)
+# Get list of each URL from file
+filePath = "C:/Users/Chris/Documents/GitHub/GoStatistics/Database sample.txt"
+with open(filePath, 'r') as file:
+    lines = file.readlines()
+    urls = [line.rstrip() for line in lines]
 
-df.head()
+# For each URL in list capture the table --> rows
+for url in urls:
+    currentPage = requests.get(url)
+    soup = BeautifulSoup(currentPage.content, 'lxml')
+    table = soup.find('table', id='gameslist')
+    # Get all rows and store them as lists in a list.
+    rows = [[x.text for x in row.find_all('td')] for row in table.find('tbody').find_all('tr')]
+    # Append rows to the dataframe: df = pd.concat(df, pd.DataFrame(rows, columns=titles))
+    df = df.append(pd.DataFrame(rows, columns=titles))
+    #df = pd.concat(df, pd.DataFrame(rows, columns=titles),ignore_index=True)
+
+# close file
+file.close()
+
+#df.head()
+#df.tail()
+
+# Export csv
+df.to_csv('GoStatistics/output.csv', index=False)
