@@ -17,7 +17,7 @@ titles = [x.text for x in table.find('thead').find_all('td')]
 #print(titles)
 
 # Get all rows and store them as lists in a list.
-rows = [[x.text for x in row.find_all('td')] for row in table.find_all('tbody')]
+rows = [[x.text for x in row.find_all('td')] for row in table.find('tbody').find_all('tr')]
 #print(rows)
 
 # Create the dataframe.
